@@ -28,20 +28,16 @@ locals {
 }
 
 #============================================================
-#             Bucket variables
-#============================================================
-
-variable "bucket_names" {
-  description = "List of buckets that will be created."
-  type        = list(string)
-}
-
-#============================================================
 #             VPC variables
 #============================================================
 
+variable "vpc" {
+  description = "VPC name (pre-existing resource)."
+  type        = string
+}
+
 variable "private_subnets_vpc" {
-  description = "List of private subnets that already exists in the VPC."
+  description = "List of private subnets that already exists in the VPC (pre-existing resource)."
   type        = list(string)
 }
 

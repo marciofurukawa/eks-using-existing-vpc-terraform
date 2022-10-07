@@ -49,7 +49,7 @@ module "eks" {
   }
 
   eks_managed_node_groups = {
-    "eks-${var.ambiente}-node" = {
+    "eks-${var.environment}-node" = {
       min_size     = 3
       max_size     = 5
       desired_size = 3
