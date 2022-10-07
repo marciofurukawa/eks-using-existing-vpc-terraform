@@ -8,12 +8,12 @@ ___
 
 Before starting this journey with us, we need to explain what "What the demo doesn't show!" is. The idea for this series of posts in LinkedIn and Medium about technology came from a difficulty in finding materials on the internet about various problems that we @ghbonifacio, @marciofurukawa, @carsornelas go through during our day to day work as Data Engineers. So, after resolving several issues, we decided to document and bring these resolutions to the community in the form of a series of texts. I hope you enjoy it a lot, feel free to contact us to exchange ideas, we leave the contacts at the end of the texts! Let's go hand in the dough!.
 
-Follow us on our social media and GitHub:
-|     |     |     |     |
+Follow us on our social media or GitHub!
+| Collaborator |     |     |     |
 | --- | --- | --- | --- |
-| `Carlos Ornelas`    | [Linkedin](https://www.linkedin.com/in/carlosornelas/)     | [Medium](https://medium.com/@carlosornelas.ti) | [GitHub](https://github.com/carsornelas)    |
-| `Gabriel Bonifácio` | [Linkedin](https://www.linkedin.com/in/gabriel-bonifacio/) | [Medium](https://medium.com/@ghenriquee)       | [GitHub](https://github.com/ghbonifacio)    |
-| `Marcio Furukawa`   | [Linkedin](https://www.linkedin.com/in/marciofcampos/)     | [Medium](https://medium.com/@marcio.furukawa)  | [GitHub](https://github.com/marciofurukawa) |
+| `Carlos Ornelas`    | [LinkedIn](https://www.linkedin.com/in/carlosornelas/)     | [Medium](https://medium.com/@carlosornelas.ti) | [GitHub](https://github.com/carsornelas)    |
+| `Gabriel Bonifácio` | [LinkedIn](https://www.linkedin.com/in/gabriel-bonifacio/) | [Medium](https://medium.com/@ghenriquee)       | [GitHub](https://github.com/ghbonifacio)    |
+| `Marcio Furukawa`   | [LinkedIn](https://www.linkedin.com/in/marciofcampos/)     | [Medium](https://medium.com/@marcio.furukawa)  | [GitHub](https://github.com/marciofurukawa) |
 
 
 
@@ -24,11 +24,12 @@ ___
   - [1.1. Terraform installation](#11-terraform-installation)
   - [1.2. kubectl installation](#12-kubectl-installation)
   - [1.3. AWS CLI installation](#13-aws-cli-installation)
-  - [1.4. Arquitetura AWS necessária](#14-arquitetura-aws-necessária)
-    - [1.4.1. Estrutura de VPC e Subnets](#141-estrutura-de-vpc-e-subnets)
-    - [1.4.2. Estrutura de Roteamento e Gateways](#142-estrutura-de-roteamento-e-gateways)
-- [2. Deploy da Infraestrutura](#2-deploy-da-infraestrutura)
-  - [2.1. Aplicando o Terraform](#21-aplicando-o-terraform)
+  - [1.4. AWS Architecture scenario](#14-aws-architecture-scenario)
+    - [1.4.1. Pre-existing resources in AWS: VPC and Subnets
+](#141-pre-existing-resources-in-aws-vpc-and-subnets)
+    - [1.4.2. Pre-existing resources in AWS: Route Tables and Gateways](#142-pre-existing-resources-in-aws-route-tables-and-gateways)
+- [2. EKS Deployment](#2-eks-deployment)
+  - [2.1. Applying the Terraform script](#21-applying-the-terraform-script)
   - [2.2. Liberando acesso ao EKS](#22-liberando-acesso-ao-eks)
   - [2.3. Configurando o EKS Persistent Storage](#23-configurando-o-eks-persistent-storage)
   - [2.4. Restart do `coredns`](#24-restart-do-coredns)
@@ -40,7 +41,7 @@ ___
 
 ## 1.1. `Terraform` installation
 
-In this project we are using `Terraform` version 1.1.7 and you can get it from the [official Hashicorp link](https://releases.hashicorp.com/terraform/), or executing the following steps if your Operational System is a Linux Ubuntu ditro:
+In this project we are using `Terraform` version 1.1.7 and you can get it from the [official Hashicorp website](https://releases.hashicorp.com/terraform/), or executing the following steps if your Operational System is a Linux Ubuntu ditro:
 
 1- Updating the `apt`:
 ```bash
@@ -70,7 +71,7 @@ ___
 
 ## 1.2. `kubectl` installation
 
-The `kubectl` is the command line interface (CLI) that we are going to use to communicate to Kubernetes. You can follow the [official link](https://kubernetes.io/docs/tasks/tools/install-kubectl-linux/) to get the installation or the following steps:
+The `kubectl` is the command line interface (CLI) that we are going to use to communicate to Kubernetes. You can follow the [official website](https://kubernetes.io/docs/tasks/tools/install-kubectl-linux/) to get the installation or the following steps:
 
 PS: There's no version restriction, so you can install the `latest` release for Linux Ubuntu distro.
 
@@ -112,9 +113,34 @@ ___
 
 ## 1.3. `AWS CLI` installation
 
-The `AWS CLI` is the command line interface (CLI) that we are going to use to communicate to Amazon Web Services. You can follow the [official link](https://docs.aws.amazon.com/cli/latest/userguide/getting-started-install.html) to get the installation.
+The `AWS CLI` is the command line interface (CLI) that we are going to use to communicate to Amazon Web Services. You can follow the [official AWS website](https://docs.aws.amazon.com/cli/latest/userguide/getting-started-install.html) to get the installation or the following steps:
 
 PS: There's no version restriction, so you can install the `latest` release for Linux Ubuntu distro.
+
+1- Getting the installer:
+```bash
+curl "https://awscli.amazonaws.com/awscli-exe-linux-x86_64.zip" -o "awscliv2.zip"
+
+unzip awscliv2.zip
+
+sudo ./aws/install
+```
+
+2- Unzipping the installer:
+```bash
+unzip awscliv2.zip
+```
+
+3- Running the installer:
+```bash
+./aws/install -i /usr/local/aws-cli -b /usr/local/bin
+```
+
+4- Testing the installation:
+```bash
+aws --version
+```
+PS: The command should return the latest version of the AWS CLI.
 
 ___
 [go to the top](#table-of-contents)
@@ -122,46 +148,56 @@ ___
 
 
 
-## 1.4. Arquitetura AWS necessária
+## 1.4. AWS Architecture scenario
 
-Os scripts neste repositório só executarão com sucesso se houver uma estrutura de VPC contendo subnets e gateways criada previamente, visto que os mesmos já existiam antes de construirmos toda a infraestrutura e portanto não foram colocados no script.
+All the tutorials that we found in the internet taught us how to create an EKS Cluster from scratch, creating the VPC and all the other resources, but `what the demo doesn't show` is that in real life this scenario will be satisfied just if you're starting a project from zero, but if you need to create a new EKS Cluster in a pre-existing VPC, using only private subnets, so you're going to follow a lot of specific rules.
 
-___
-[ir para o topo](#índice-table-of-contents)
-___
-
-
-
-### 1.4.1. Estrutura de VPC e Subnets
-
-Contamos que já deve existir uma VPC com pelo menos 3 subnets públicas e 3 subnets privadas em availability zones diferentes. No caso da infra atual, foram criadas 6 de cada, ficando da seguinte forma:
-
-![Estrutura de VPC e Subnets](readme_data/pics/diagrama_01_subnets.png "Estrutura de VPC e Subnets")
+Here we are going to talk about all the errors that we faced during this deployment and maybe this source code could help you to overcome them. Let's go!
 
 ___
-[ir para o topo](#índice-table-of-contents)
+[go to the top](#table-of-contents)
 ___
 
 
 
-### 1.4.2. Estrutura de Roteamento e Gateways
+### 1.4.1. Pre-existing resources in AWS: VPC and Subnets
 
-As subnets públicas deverão estar ligadas a um Internet Gateway, enquanto as privadas deverão se conectar a um NAT Gateway e este, por sua vez, a um Elastic IP e também se comunicando com uma subnet pública.
+An EKS must use at least 3 subnets in different availability zones, so for our scenario we have those resources (that already exists and won't be created from the source code in this GitHub):
 
-Todas as subnets, públicas e privadas, se comunicarão com a rede interna do XXXXXXX através de um Transit Gateway, ficando da seguinte forma:
+![VPC and Subnets structure](readme_data/pics/aws_diagram_01_subnets.png "VPC and Subnets structure")
 
-![Estrutura de Roteamento e Gateways](readme_data/pics/diagrama_02_route_tables.png "Estrutura de Roteamento e Gateways")
+As you can see, here we have 3 pair of subnets: one is `private` and another is `public` in the AWS region: `us-east-1` and each pair is located in a different availability zone: `a`, `b` and `c`.
 
 ___
-[ir para o topo](#índice-table-of-contents)
+[go to the top](#table-of-contents)
 ___
 
 
 
+### 1.4.2. Pre-existing resources in AWS: Route Tables and Gateways
 
-# 2. Deploy da Infraestrutura
+Having the VPC and Subnets, we're going to need 3 different gateways: `NAT Gateway`, `Transit Gateway` and `Internet Gateway`. As the other resources, those are not going to be created by the terraform code in this repository.
 
-## 2.1. Aplicando o Terraform
+![Route Tables and Gateways structure](readme_data/pics/aws_diagram_02_route_tables.png "Route Tables and Gateways structure")
+
+As you can see we have three `Route Tables`:
+- the `RT_MAIN` because it's mandatory to have a default Route Table during the VPC creation, but it's not associated to any Subnet;
+- the `RT_TRANSIT_GT` that will be used by the `private subnets`;
+- and the `RT_INTERNET_GT` that will be used by the `public subnets`.
+
+The public subnets are going to access the company network through the `Transit Gateway` and the internet through the `Internet Gateway`, so all the public subnets MUST HAVE the setting: `Enable auto-assign public IPv4 address` = activated (see more details in the AWS Documentation [here](https://docs.aws.amazon.com/eks/latest/userguide/network_reqs.html) and [here](https://aws.amazon.com/premiumsupport/knowledge-center/eks-cluster-subnet-configuration/)).
+
+The private subnets are going to access the company network through the `Transit Gateway`, the same thing, but the internet are going to reach through a `NAT Gateway`. This `NAT Gateway` are going to be related a `public subnet` (in our diagram it'll be the SUBNET_PUB_1A) and all the private subnets MUST HAVE the configuration: `Enable auto-assign public IPv4 address` = deactivated and, for this reason, it must have an `Elastic IP` created.
+
+___
+[go to the top](#table-of-contents)
+___
+
+
+
+# 2. EKS Deployment
+
+## 2.1. Applying the Terraform script
 
 1- Acessar a pasta deste repositório:
 ```
