@@ -3,7 +3,7 @@
 #==============================================================
 aws_region = "us-east-1"
 
-project     = "eks-private-terraform"
+project     = "poc-private-terraform"
 environment = "prd"
 
 tags = {

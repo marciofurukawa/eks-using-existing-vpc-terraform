@@ -199,34 +199,33 @@ ___
 
 ## 2.1. Applying the Terraform script
 
-1- Acessar a pasta deste repositório:
-```
-cd <path>/infra-dados
+1- Access this repository path:
+```bash
+cd <path>/eks-private-terraform
 ```
 
-2- Iniciar o Terraform:
-```
+2- Initiate Terraform:
+```bash
 terraform init
 ```
 
-3- Formatar os arquivos:
-```
+3- Check and format the terraform files:
+```bash
 terraform fmt
 ```
 
-4- Validar os arquivos:
-```
+4- Validate the terraform files:
+```bash
 terraform validate
 ```
 
-5- Aplicar os scripts em PRD:
-```
+5- Apply the scripts using the environment you want, for instance PRD:
+```bash
 terraform apply --var-file="env/prd.tfvars"
 ```
-Obs: Revise se não há nenhuma variável fixada nos scripts com o nome de "hml", exceto no arquivo: `dev/hml.tfvars`
 
-6- Confirme as ações do terraform digitando `yes` e teclando `enter`:
-```
+6- Confirm the actions typing `yes`:
+```bash
 Do you want to perform these actions?
 
   Terraform will perform the actions described above.
@@ -235,59 +234,41 @@ Do you want to perform these actions?
 ```
 
 ___
-[ir para o topo](#índice-table-of-contents)
+[go to the top](#table-of-contents)
 ___
 
 
 
-## 2.2. Liberando acesso ao EKS
+## 2.2. Granting access do EKS
 
-1- Atualizando o contexto local:
-```
-aws eks update-kubeconfig --region us-east-1 --name eks-prd-dados
+1- Updating your local kubernetes context:
+```bash
+aws eks update-kubeconfig --region us-east-1 --name <cluster-name>
 ```
 
-2- Adicionando usuários como admin:
+PS: In this script, running for PRD environment, the cluster name should be:
+```bash
+aws eks update-kubeconfig --region us-east-1 --name eks-prd-poc-private-terraform
 ```
+
+2- Adding users as master:
+```bash
 kubectl edit -n kube-system configmap/aws-auth
 ```
 
-3- Será aberto o arquivo de configuração e precisaremos adicionar um bloco no mesmo nível de `mapRoles` chamado `mapUsers` com os usuários que queremos que se tornem `masters` do cluster EKS, por exemplo:
+3- It'll be opened the configuration file and we need to add the `mapUsers` block in the same level to `mapRoles` block. In this block we need to put the AWS users in the `system:masters` group, for instance:
 
-Bloco a ser adicionado:
-```
+Example of `mapUsers` block:
+```bash
   mapUsers: |
-    - userarn: arn:aws:iam::000000000000:user/nome.sobrenome
-      username: nome.sobrenome
+    - userarn: arn:aws:iam::000000000000:user/nome.sobrenome ## put your User ARN here
+      username: nome.sobrenome ## put your username here
       groups:
         - system:masters
 ```
 
-Então o arquivo será aberto desta forma:
-```
-# Please edit the object below. Lines beginning with a '#' will be ignored,
-# and an empty file will abort the edit. If an error occurs while saving this file will be
-# reopened with the relevant failures.
-#
-apiVersion: v1
-data:
-  mapRoles: |
-    - groups:
-      - system:bootstrappers
-      - system:nodes
-      rolearn: arn:aws:iam::000000000000:role/eks-prd-node-eks-node-group-20220918190130000000000000
-      username: system:node:{{EC2PrivateDNSName}}
-kind: ConfigMap
-metadata:
-  creationTimestamp: "2022-09-18T19:15:14Z"
-  name: aws-auth
-  namespace: kube-system
-  resourceVersion: "1256"
-  uid: a666c666-14e0-4666-af1e-50666ccc6666
-```
-
-E com o bloco `mapUsers` ficaria desta forma:
-```
+So, the configuration file should like that:
+```bash
 # Please edit the object below. Lines beginning with a '#' will be ignored,
 # and an empty file will abort the edit. If an error occurs while saving this file will be
 # reopened with the relevant failures.
@@ -301,12 +282,12 @@ data:
       rolearn: arn:aws:iam::000000000000:role/eks-prd-node-eks-node-group-20220918190130000000000000
       username: system:node:{{EC2PrivateDNSName}}
   mapUsers: |
-    - userarn: arn:aws:iam::000000000000:user/nome.sobrenome
-      username: nome.sobrenome
+    - userarn: arn:aws:iam::000000000000:user/nome.sobrenome ## put your User ARN here
+      username: nome.sobrenome ## put your username here
       groups:
         - system:masters
-    - userarn: etc...
-      username: etc...
+    - userarn: etc... ## put your User ARN here
+      username: etc... ## put your username here
       groups:
         - system:masters
 kind: ConfigMap
@@ -318,41 +299,39 @@ metadata:
   uid: a666c666-14e0-4666-af1e-50666ccc6666
 ```
 
-Se tiver alterado corretamente, atentando-se a identação, será retornada a mensagem:
-```
+If you typed correctly (repecting the identation) you'll receive the message:
+```bash
 configmap/aws-auth edited
 ```
 
 ___
-[ir para o topo](#índice-table-of-contents)
+[go to the top](#table-of-contents)
 ___
 
 
 
-## 2.3. Configurando o EKS Persistent Storage
+## 2.3. Configurating the EKS Persistent Storage
 
-É necessário configurar o `EKS Persistent Storage` no cluster EKS que acabamos de subir, caso contrário o Airflow não conseguirá inicializar. Esta configuração foi retirada do [link oficial da AWS](https://aws.amazon.com/pt/premiumsupport/knowledge-center/eks-persistent-storage/).
+I strongly recommend you to configurate the `EKS Persistent Storage` in the EKS Cluster that we have just created, because I had some problems in the past creating some applications in the EKS as Apache Airflow during the Volume allocation, but you can skip this step and see if your apps and pods are executing without problems.
 
-Seguir os passos de 1 a 9 da seção `Option A: Deploy and test the Amazon EBS CSI driver`.
-
-Nota: Este é um pré-requisito para que o pod de PostgreSQL do Airflow consiga ser instanciado e criar seu respectivo volume.
+If you want to configurate it, you need to follow the steps 1 to 9 in the section: `Option A: Deploy and test the Amazon EBS CSI driver` in the [AWS official website](https://aws.amazon.com/pt/premiumsupport/knowledge-center/eks-persistent-storage/).
 
 ___
-[ir para o topo](#índice-table-of-contents)
+[go to the top](#table-of-contents)
 ___
 
 
 
-## 2.4. Restart do `coredns`
+## 2.4. Restarting the `coredns`
 
-Após a subida do cluster é bem provável que ele ainda não consiga resolver os hostnames do XXXXXXX e para isso será preciso reiniciar o serviço de `coredns` executando o seguinte comando dentro do EKS:
+Maybe your EKS Cluster couldn't resolve the hostnames from your Company Network (through the Transit Gateway TG_COMPANY in our schema in the topic [1.4.2. Pre-existing resources in AWS: Route Tables and Gateways](#142-pre-existing-resources-in-aws-route-tables-and-gateways)).
 
-```
+This is another optional step that we needed to execute because we used some applications as ArgoCD and Apache Airflow, but maybe you don't need to do that, but if you want to avoid this problem we need to restart the `coredns` service executing the following command in the EKS:
+
+```bash
 kubectl rollout restart -n kube-system deployment/coredns
 ```
 
-Desta forma o serviço será reiniciado e não ocorrerá mais problemas durante a instalação do ArgoCD, Airflow e outras aplicações.
-
 ___
-[ir para o topo](#índice-table-of-contents)
+[go to the top](#table-of-contents)
 ___
