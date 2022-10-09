@@ -43,19 +43,19 @@ module "eks" {
   }
 
   eks_managed_node_group_defaults = {
-    disk_size                  = 50
+    disk_size                  = var.disk_size
     instance_types             = [var.instance_type]
     iam_role_attach_cni_policy = true
   }
 
   eks_managed_node_groups = {
     "eks-${var.environment}-node" = {
-      min_size     = 3
-      max_size     = 5
-      desired_size = 3
+      min_size     = var.ngroup_min_size
+      max_size     = var.ngroup_max_size
+      desired_size = var.ngroup_desired_size
 
       instance_types = [var.instance_type]
-      capacity_type  = "ON_DEMAND"
+      capacity_type  = var.ngroup_capacity_type
     }
   }
 

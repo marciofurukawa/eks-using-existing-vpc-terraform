@@ -50,7 +50,32 @@ variable "cluster_version" {
   type        = string
 }
 
+variable "disk_size" {
+  description = "EKS instance disk size."
+  type        = number
+}
+
 variable "instance_type" {
   description = "EKS Cluster instance type."
+  type        = string
+}
+
+variable "ngroup_min_size" {
+  description = "Minimal size of node groups instances."
+  type        = number
+}
+
+variable "ngroup_max_size" {
+  description = "Maximum size of node groups instances."
+  type        = number
+}
+
+variable "ngroup_desired_size" {
+  description = "Desired size of node groups instances."
+  type        = number
+}
+
+variable "ngroup_capacity_type" {
+  description = "Type of capacity of node groups instances."
   type        = string
 }
