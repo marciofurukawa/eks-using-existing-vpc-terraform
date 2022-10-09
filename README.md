@@ -30,9 +30,9 @@ ___
     - [1.4.2. Pre-existing resources in AWS: Route Tables and Gateways](#142-pre-existing-resources-in-aws-route-tables-and-gateways)
 - [2. EKS Deployment](#2-eks-deployment)
   - [2.1. Applying the Terraform script](#21-applying-the-terraform-script)
-  - [2.2. Liberando acesso ao EKS](#22-liberando-acesso-ao-eks)
-  - [2.3. Configurando o EKS Persistent Storage](#23-configurando-o-eks-persistent-storage)
-  - [2.4. Restart do `coredns`](#24-restart-do-coredns)
+  - [2.2. Granting access to EKS](#22-granting-access-to-eks)
+  - [2.3. Configurating the EKS Persistent Storage](#23-configurating-the-eks-persistent-storage)
+  - [2.4. Restarting the coredns service](#24-restarting-the-coredns-service)
   
 
 
@@ -239,7 +239,7 @@ ___
 
 
 
-## 2.2. Granting access do EKS
+## 2.2. Granting access to EKS
 
 1- Updating your local kubernetes context:
 ```bash
@@ -322,7 +322,7 @@ ___
 
 
 
-## 2.4. Restarting the `coredns`
+## 2.4. Restarting the `coredns` service
 
 Maybe your EKS Cluster couldn't resolve the hostnames from your Company Network (through the Transit Gateway TG_COMPANY in our schema in the topic [1.4.2. Pre-existing resources in AWS: Route Tables and Gateways](#142-pre-existing-resources-in-aws-route-tables-and-gateways)).
 
