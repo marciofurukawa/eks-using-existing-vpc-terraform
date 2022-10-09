@@ -75,7 +75,7 @@ As you can see we have three `Route Tables`:
 - the `RT_TRANSIT_GT` that will be used by the `private subnets`;
 - and the `RT_INTERNET_GT` that will be used by the `public subnets`.
 
-The public subnets are going to access the company network through the `Transit Gateway` and the internet through the `Internet Gateway`, so all the public subnets MUST HAVE the setting: `Enable auto-assign public IPv4 address` = activated (see more details in the AWS Documentation [here](https://docs.aws.amazon.com/eks/latest/userguide/network_reqs.html) and [here](https://aws.amazon.com/premiumsupport/knowledge-center/eks-cluster-subnet-configuration/)).
+The public subnets are going to access the company network through the `Transit Gateway` and the internet through the `Internet Gateway`, so all the public subnets MUST HAVE the setting: `Enable auto-assign public IPv4 address` = activated (see more details in the AWS official Documentation [here](https://docs.aws.amazon.com/eks/latest/userguide/network_reqs.html) and [here](https://aws.amazon.com/premiumsupport/knowledge-center/eks-cluster-subnet-configuration/)).
 
 The private subnets are going to access the company network through the `Transit Gateway`, but the internet are going to reach through a `NAT Gateway`. This `NAT Gateway` are going to be related a `public subnet` (in our diagram it'll be the SUBNET_PUB_1A) and all the private subnets MUST HAVE the configuration: `Enable auto-assign public IPv4 address` = deactivated and it must have an `Elastic IP` created.
 
@@ -89,7 +89,7 @@ ___
 
 ## 2.1. `Terraform` installation
 
-In this project we are using `Terraform` version 1.1.7 and you can get it from the [official Hashicorp website](https://releases.hashicorp.com/terraform/), or executing the following steps if your Operational System is a Linux Ubuntu ditro:
+In this project we are using `Terraform` version 1.1.7 and you can get it from the [Hashicorp official website](https://releases.hashicorp.com/terraform/), or executing the following steps if your Operational System is a Linux Ubuntu ditro:
 
 1- Updating the `apt` (Advanced Packaging Tool):
 ```bash
@@ -119,7 +119,7 @@ ___
 
 ## 2.2. `kubectl` installation
 
-The `kubectl` is the command line interface (CLI) that we are going to use to communicate to Kubernetes. You can follow the [official website](https://kubernetes.io/docs/tasks/tools/install-kubectl-linux/) to get the installation or the following steps:
+The `kubectl` is the command line interface (CLI) that we are going to use to communicate to Kubernetes. You can follow the [Kubernetes official documentation](https://kubernetes.io/docs/tasks/tools/install-kubectl-linux/) to get the installation or the following steps:
 
 PS: There's no version restriction, so you can install the `latest` release for Linux Ubuntu distro.
 
@@ -161,7 +161,7 @@ ___
 
 ## 2.3. `AWS CLI` installation
 
-The `AWS CLI` is the command line interface (CLI) that we are going to use to communicate to Amazon Web Services. You can follow the [official AWS website](https://docs.aws.amazon.com/cli/latest/userguide/getting-started-install.html) to get the installation or the following steps:
+The `AWS CLI` is the command line interface (CLI) that we are going to use to communicate to Amazon Web Services. You can follow the [AWS official documentation](https://docs.aws.amazon.com/cli/latest/userguide/getting-started-install.html) to get the installation or the following steps:
 
 PS: There's no version restriction, so you can install the `latest` release for Linux Ubuntu distro.
 
@@ -198,7 +198,7 @@ AWS Secret Access Key [None]: wJalrXUtnFEMI/K7MDENG/bPxRfiCYEXAMPLEKEY # your se
 Default region name [None]: us-west-2 # your aws region here
 Default output format [None]: json # the output format you prefer
 ```
-Note: If you don't have any AWS Access Key ID and Secret Key, see the [official AWS documentation](https://docs.aws.amazon.com/cli/latest/userguide/cli-chap-configure.html).
+Note: If you don't have any AWS Access Key ID and Secret Key, see the [AWS official documentation](https://docs.aws.amazon.com/cli/latest/userguide/cli-chap-configure.html).
 
 ___
 [go to the top](#table-of-contents)
@@ -329,7 +329,7 @@ Note: If you typed correctly (repecting the identation) you'll receive the messa
 configmap/aws-auth edited
 ```
 
-If you want more details about this configuration, please read the [official AWS documentation](https://docs.aws.amazon.com/eks/latest/userguide/add-user-role.html).
+If you want more details about this configuration, please read the [AWS official documentation](https://docs.aws.amazon.com/eks/latest/userguide/add-user-role.html).
 
 ___
 [go to the top](#table-of-contents)
@@ -341,7 +341,7 @@ ___
 
 (Optional) We strongly recommend you to configurate the `EKS Persistent Storage` in the EKS Cluster that we have just created, because we had some problems creating applications in the EKS as Apache Airflow during the Volume allocation, but you can skip this step and see if your apps and pods are executing without problems.
 
-If you want to configurate it, you need to follow the `steps 1 to 9` in the section: `Option A: Deploy and test the Amazon EBS CSI driver` in the [official AWS documentation](https://aws.amazon.com/pt/premiumsupport/knowledge-center/eks-persistent-storage/).
+If you want to configurate it, you need to follow the `steps 1 to 9` in the section: `Option A: Deploy and test the Amazon EBS CSI driver` in the [AWS official documentation](https://aws.amazon.com/pt/premiumsupport/knowledge-center/eks-persistent-storage/).
 
 ___
 [go to the top](#table-of-contents)
