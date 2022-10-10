@@ -40,9 +40,11 @@ ___
 ___
 # 1. AWS Architecture
 
-All the tutorials that we found in the internet taught us how to create an EKS Cluster from scratch, creating the VPC and all the other resources, but `what the demo doesn't show` is that, in real life, this scenario will be satisfied just if you're starting a project from zero, but if you need to create a new EKS Cluster in a pre-existing VPC, using only private subnets, so you're going to follow a lot of specific rules.
+All the tutorials that we found in the internet taught us how to create an EKS Cluster from scratch, creating the VPC and all the other resources, but `what the demo doesn't show` is that, in real life, this scenario will be satisfied just if you're starting a project from zero, but if you need to create a new EKS Cluster, using node groups for autoscalling, in a pre-existing VPC, using only private subnets, so you're going to follow a lot of specific rules.
 
-Here we are going to talk about all the errors that we faced during this deployment and maybe this source code could help you to overcome them! So let's go!
+Here we are going to talk about all the errors that we faced during this deployment and maybe this source code could help you to overcome them!
+
+So let's go!
 
 ___
 [go to the top](#table-of-contents)

@@ -18,8 +18,8 @@ tags = {
 
 cluster_version = "1.23" ## put your EKS Cluster version here
 
-disk_size     = 50           ## put your EKS disk size here
-instance_type = "m6i.xlarge" ## put your instance type here
+disk_size     = 50          ## put your EKS disk size here
+instance_type = "t3.medium" ## put your instance type here
 
 ngroup_min_size      = 3           ## put your node group minimum size here
 ngroup_max_size      = 5           ## put your node group maximum size here
